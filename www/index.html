@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="shortcut icon" href="./build/images/vegvisir.png" type="image/png">
+    <title>
+      Vegvisir - web based gui for lldb
+    </title>
+
+    <!-- jQuery -->
+    <script src="/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/vendors/nprogress/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="/vendors/iCheck/icheck.min.js"></script>
+    <script src="/vendors/dropzone/dist/min/dropzone.min.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="/build/js/custom.js"></script>
+    <script src="/build/js/helper.js"></script>
+    
+    <script src="/build/js/lldb.js"></script>
+    <script src="/build/js/clusterize.js"></script>
+    <link href="/build/css/clusterize.css" rel="stylesheet">
+
+    <!--  typeahead to display help-->
+    <script src="/build/js/typeahead.js"></script>
+    <script src="/build/js/apis.js"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="/build/css/freelancer.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/build/css/custom.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/build/css/hacker.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+</head>
+
+  <body class="nav-md containerbody" onload="check_if_target()">
+    <div class="container body">
+      <div class="main_container">
+      <div class="col-md-4">
+        <img src="./build/images/vegvisirw.png" class="img-rounded" alt="Cinque Terre" width="30" height="30">
+      </div>
+      <div class="col-md-8">
+                  <span class="heading col-md-11">
+                    <a target="_blank" href="https://github.com/ant4g0nist/vegvisir">
+                    Vegvisir</a>
+                     - by 
+                    <a target="_blank" href="https://twitter.com/ant4g0nist">@ant4g0nist</a>
+                  </span>
+
+                <button type="button" class="btn btn-default col-md-1" data-toggle="modal" data-target="#modal-default">
+                      help
+                  </button>
+            </div>
+      </div>
+      <!-- LLDB HELP START -->
+            <div class="modal fade" id="modal-default" style="display: none;" tabindex='-1'>
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <img aria-hidden="true" src="./build/images/vegvisir.png" class="img-rounded" alt="Cinque Terre" width="50" height="50">
+                      </button>
+                        <h4 class="modal-title text-center">LLDB Commands Cheat Sheet</h4>
+                  </div>
+
+                  <div class="modal-body">
+                    <!-- <p>One fine body…</p> -->
+                      <table class="table table-hover borderless" id="lldb_help_modal">
+                          <tbody>
+                              <tr>
+                                <th class="text-center">:command:</th>
+                                <th class="text-center">:info:</th>
+                              </tr>
+                          </tbody>
+                      </table>
+                      <script type="text/javascript">
+                        load_lldb_help_modal()
+                      </script>
+                      
+                  </div>
+
+
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                  </div>
+                </div>
+                <!-- /.modal-content -->
+              </div>
+              <!-- /.modal-dialog -->
+            </div>
+      <!-- LLDB HELP STOP -->
+
+            <!--  percentage graph -->
+              <div class="col-md-12">
+                    <div id="percentage_graph" class="progress">
+                    </div>
+              </div>
+            <!--  percentage graph end -->
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+              <div class="nav-tabs-custom functions_dissassembly">
+                <ul class="nav nav-tabs">
+                          <li class="active">
+                                <a href="#functions_div" data-toggle="tab" aria-expanded="true">
+                                    Funcs
+                                </a>
+                           </li>
+                           <li>
+                                 <a href="#imported_functions_div" data-toggle="tab" aria-expanded="false">
+                                     Imported
+                                 </a>
+                            </li>
+                </ul>
+
+                <div class="tab-content functions_dissassembly">
+                  <div class="tab-pane active" id="functions_div">
+                          <ul id="functions" class="functions_dissassembly">
+                            <script type="text/javascript">
+                              lazy_load("functions_div", "functions");
+                            </script>
+                          </ul>
+                    </div>
+
+                    <div class="tab-pane" id="imported_functions_div">
+                            <ul id="imported_functions" class="functions_dissassembly">
+                              <script type="text/javascript">
+                                lazy_load("imported_functions_div", "imported_functions");
+                              </script>
+                            </ul>
+                      </div>
+                </div>
+
+            </div>
+        </div>
+        <!--  disassembly, sections strings-->
+          <div class="col-md-8 functions_dissassembly">
+            <div class="nav-tabs-custom functions_dissassembly">
+                  <ul class="nav nav-tabs" for="inputWarning"  id="tabs_ul">
+                            <li  class="active" id="disassembly_li" >
+                                  <a href="#disassembly" data-toggle="tab" aria-expanded="true">
+                                      Disassembly
+                                  </a>
+                             </li>
+
+                            <li class="" id="sections_li">
+                                  <a href="#sections" data-toggle="tab" aria-expanded="false">
+                                      Sections
+                                  </a>
+                             </li>
+
+                            <li class="" id="strings_li">
+                                  <a href="#strings_div" data-toggle="tab" aria-expanded="false">
+                                      Strings
+                                  </a>
+                            </li>
+
+                            <li class="" id="context_li">
+                                  <a href="#context" data-toggle="tab" aria-expanded="false">
+                                      Context
+                                  </a>
+                            </li>
+                  </ul>
+
+                  <div class="tab-content functions_dissassembly" id="tabs_content">
+                        <div class="tab-pane active" id="disassembly">
+                            <table class="table table-hover borderless" id="disassembly_ul">
+                              <tbody >
+                              <tr>
+                                <th>offset</th>
+                                <th>mnemonic</th>
+                                <th>op_str</th>
+                                <th>bytes</th>
+                              </tr>
+                              </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane" id="sections">
+                              <table class="table table-hover borderless" id="sections_ul">
+                                <tbody >
+                                <tr>
+                                  <th>name</th>
+                                  <th>file_addr</th>
+                                  <th>file_offset</th>
+                                  <th>file_size</th>
+                                  <th>perm</th>
+                                </tr>
+
+                                </tbody>
+
+                              </table>
+                        </div>
+
+                        <div class="tab-pane clusterize" id="strings_div">
+                              <table class="table table-hover borderless" id="strings">
+                                <tbody id="strings_tbody" class="clusterize-content">
+                                <tr>
+                                  <th>file_addr</th>
+                                  <th>string</th>
+                                </tr>
+                                </tbody>
+                              </table>
+
+                              <div id="scrollArea" class="clusterize-scroll">
+                                <table class="table table-hover clusterize-scroll borderless" >
+                                  <tbody id="contentArea" class="clusterize-content">
+                                    <tr class="clusterize-no-data">
+                                      <td>Loading data…</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                             </div>
+                        </div>
+
+                        <div class="tab-pane" id="context">
+                          <!-- when there's a process attached, keep this class to active -->
+                            <div class="row" >
+                            <span class="heading col-md-8 text-left" id="context_symbol"></span>
+                            <span class="heading col-md-4 text-center" id="context_jump">jump</span>
+                                
+                            </div>
+                            <table class="table table-hover borderless" id="context_disassembly">
+                              <tbody >
+                              <tr>
+                                <th>offset</th>
+                                <th>mnemonic</th>
+                                <th>op_str</th>
+                                <th>bytes</th>
+                              </tr>
+                              </tbody>
+                            </table>
+                        </div>
+            </div>
+
+          </div>
+
+          </div>
+
+          <div class="col-md-2">
+              <!-- play, pause, step buttons-->
+              <div class="margin">
+                <!-- process continue -->
+                  <a class="btn btn-app" onclick="run_command('c')">
+                        <i class="fa fa-play">
+                        </i>
+                  </a>
+
+                  <!-- process interrupt -->
+                  <a class="btn btn-app" onclick="run_command('process interrupt')">
+                      <i class="fa fa-pause">
+                      </i>
+                  </a>
+
+                  <!-- thread step into -->
+                  <a  class="btn btn-app">
+                      <i class="glyphicon glyphicon-log-in" onclick="run_command('thread step-in')">
+                      </i>
+                  </a>
+
+                  <!-- thread step out -->
+                  <a class="btn btn-app" onclick="run_command('thread step-out')">
+                      <i class="glyphicon glyphicon-log-out">
+                      </i>
+                  </a>
+
+                  <!-- detach -->
+                  <button type="button" class="btn btn-block button_no_focus" style="background-color:black" onclick="run_command('process detach')">
+                    <i class="fa fa-stop">
+                      Detach
+                    </i>
+                  </button>
+
+              </div>
+              <!-- registers -->
+              <div class="form-group registers_div">
+                  <table id="registers" class="table table-hover borderless">
+                    <tbody>
+                      <tr>
+                        <th>REGISTERS</th>
+                        <!-- <th>value</th> -->
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+
+          </div>
+
+          <div id="lldbconsole" class="col-md-12">
+              <div class="form-group">
+                  <textarea readonly class="form-control" style="background-color:#000000;color:#ffffff" id="lldb_console" rows="6" placeholder="lldb console output ..." ></textarea>
+              </div>
+          </div>
+
+          <div class="col-md-12">
+              <div class="input-group input-group-sm" id="the-basics">
+                  <input type="text" class="form-control typeahead"  autocomplete="off" id="command">
+                      <script type="text/javascript">
+
+                          var substringMatcher = function(strs) {
+
+                          return function findMatches(q, cb) {
+                            var matches, substringRegex;
+                            matches = [];
+
+                            substrRegex = new RegExp(q, 'i');
+
+                            $.each(strs, function(i, str) {
+                              if (substrRegex.test(str)) {
+                                matches.push(str);
+                              }
+                            });
+                            cb(matches);
+                          };
+                        };
+
+                        $('#command').typeahead({local:lldb_commands})
+
+                        $('#command').keypress(function(event){
+                                var keycode = (event.keyCode ? event.keyCode : event.which);
+                                if(keycode == '13'){
+                                   run_command(command.value);
+                                }
+                            });
+                      </script>
+
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary btn-flat " onclick="javascript:run_command(command.value)">  run!
+                        </button>
+                      </span>
+                </div>
+            </div>
+      </div>
+  </body>
+</html>
