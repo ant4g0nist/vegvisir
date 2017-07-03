@@ -29,6 +29,11 @@
 	^^/D/p/Vegvisir >>> #and then point browser to http://127.0.0.1:8086
 ~~~
 
+## Donation:
+
+If you like the project, you can buy me beers :) 
+
+ 	[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-green.svg)](https://ant4g0nist.github.io)
 
 # Views
 
